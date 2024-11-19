@@ -50,17 +50,18 @@
 
   timeline.push(full_screen);
 
-  var condition_assingment = jsPsych.randomization.sampleWithoutReplacement(['Moral', 'Immoral',], 1)[0];
-
+  var condition_assignment = jsPsych.randomization.sampleWithoutReplacement(['Moral', 'Immoral'], 1)[0];
+  var stimulus_item = condition_assignment === "Moral" ? VIGNETTES[0] : VIGNETTES[1];
+  
   /* load in stimulus list */
   // IDEA: store the vignette text as a variable in .js code (loaded above)
   // each element in the variable VIGNETTES is one of the two prompts, structured as html
   // you can view the structure by looking in the console
-  console.log(VIGNETTES)
+  // console.log(VIGNETTES)
 
   //let's store one of these elements
-  stimulus_item = VIGNETTES[0]
-  console.log(stimulus_item)
+  console.log("Assigned Condition:", condition_assignment);
+  console.log("Stimulus Item:", stimulus_item);
   // MAIN TO DO: How can we systematically assign participants to one of the vignettes/ conditions?
 
   //define likert scale labels for each question
