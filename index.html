@@ -194,36 +194,27 @@
   console.log(nate_list);
   console.log(justin_list);
 
-  // Justin's questions on one page
-  var justin_manipulation_check = {
-    type: jsPsychSurveyLikert,
-    questions: [
+  var justin_questions = { 
+type: jsPsychSurveyLikert, 
+preamble: "<p>Justin quickly decided not to steal the money.</p>",  //Reminder Preamble
+questions: [ 
+{prompt: "Does Justin have entirely good (vs. entirely bad) moral principles?", required: true, labels: moral_likert, name: "justin_principles"}, 
+{prompt: "Does Justin have good (vs. bad) moral standards?", required: true, labels: moral_likert, name: "justin_standards"}, 
+{prompt: "Does Justin deep down have the moral principles to do the right thing?", required: true, labels: moral_likert, name: "justin_knowledge"} 
+], 
+}; 
 
-      { prompt: "<p>On a scale from 1-7, what was Justin's emotional response in this situation?</p>", required: true, labels: impulsivity_likert, name: "justin_impulsivity_check" },
-      { prompt: "<p>On a scale from 1-7, how certain was Justin in his decision?</p>", required: true, labels: certainty_likert, name: "justin_impulsivity_check" },
-      { prompt: "<p>On a scale from 1-7, how quickly did Justin make his decision?</p>", required: true, labels: speed_likert, name: "justin_speed_check" },
-      { prompt: "<p>On a scale from 1-7, where would you place Justin's overall moral standards?</p>", required: true, labels: moral_likert, name: "justin_impulsivity_check" }
-    ],
-    scale_width: 400
-  };
+var nate_questions = { 
+type: jsPsychSurveyLikert, 
+preamble: "<p>Nate took a long time to decide not to steal the money.</p>",   //Reminder Preamble
+questions: [ 
+{prompt: "Does Nate have entirely good (vs. entirely bad) moral principles?", required: true, labels: moral_likert, name: "nate_principles"}, 
+{prompt: "Does Nate have good (vs. bad) moral standards?", required: true, labels: moral_likert, name: "nate_standards"}, 
+{prompt: "Does Nate deep down have the moral principles to do the right thing?", required: true, labels: moral_likert, name: "nate_knowledge"} 
+], 
+}; 
+timeline.push(justin_questions, nate_questions); 
 
-  // Nate's questions on the next page
-  var nate_manipulation_check = {
-    type: jsPsychSurveyLikert,
-    questions: [
-
-      { prompt: "<p>On a scale from 1-7, what was Nate's emotional response in this situation?</p>", required: true, labels: impulsivity_likert, name: "nate_impulsivity_check" },
-      { prompt: "<p>On a scale from 1-7, how certain was Nate in his decision?</p>", required: true, labels: certainty_likert, name: "nate_impulsivity_check" },
-      { prompt: "<p>On a scale from 1-7, how quickly did Nate make his decision?</p>", required: true, labels: speed_likert, name: "nate_speed_check" },
-      { prompt: "<p>On a scale from 1-7, where would you place Nate's overall moral standards?</p>", required: true, labels: moral_likert, name: "nate_impulsivity_check" }
-
-    ],
-    scale_width: 400
-  };
-
-  // Add these trials to the jsPsych timeline
-  timeline.push(justin_manipulation_check);
-  timeline.push(nate_manipulation_check);
 
   //PLEASE KEEP FOR ALL FUTURE ITERATIONS
   //this portion of the code ensures that the data gets sent to be stored on OSF
