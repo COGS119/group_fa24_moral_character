@@ -12,6 +12,7 @@
   <script src="https://unpkg.com/@jspsych/plugin-survey-html-form@2.0.0"></script>
   <!-- load in the vignette js-->
   <script src="stimuli/stimuli_vignette.js"></script>
+  <script src="stimuli/stimuli_questions.js"></script>
   <link href="https://unpkg.com/jspsych@8.0.2/css/jspsych.css" rel="stylesheet" type="text/css" />
   <!-- This is for data storage - please be sure to keep this script in all future updates to the code!! -->
   <script src="https://unpkg.com/@jspsych-contrib/plugin-pipe"></script>
@@ -26,6 +27,8 @@
    //   jsPsych.data.displayData();
     }
   });
+
+  console.log(QUESTIONS);
 
   //PLEASE KEEP FOR ALL FUTURE ITERATIONS
   //create a unique filename by combining a random string and a millisecond counter (to avoid duplicates)
