@@ -53,8 +53,26 @@
 
   timeline.push(full_screen);
 
-  var condition_assignment = jsPsych.randomization.sampleWithoutReplacement(['Moral', 'Immoral'], 1)[0];
-  var stimulus_item = condition_assignment === "Moral" ? VIGNETTES[0] : VIGNETTES[1];
+  console.log(VIGNETTES[0])
+
+  var condition_assignment = jsPsych.randomization.sampleWithoutReplacement(['moral', 'immoral'], 1)[0];
+
+  var stimulus_item_list = [];
+
+  for (i=0; i<VIGNETTES.length; i++) {
+    cur_stim = VIGNETTES[i];
+
+    if (cur_stim["item_type"]==condition_assignment) {
+      stimulus_item_list.push(cur_stim)
+    }
+
+  }
+
+  var stimulus_item = stimulus_item_list[0];
+
+  console.log(stimulus_item);
+  console.log(stimulus_item["item_type"])
+  console.log(stimulus_item["text"])
   
   /* load in stimulus list */
   // IDEA: store the vignette text as a variable in .js code (loaded above)
@@ -157,6 +175,24 @@
     }
   }
   timeline.push(trial_scenario);
+
+  var justin_list = [];
+  var nate_list = [];
+
+  for (i=0; i<QUESTIONS.length; i++) {
+    //loop through questions and pull out the justin and nate ones
+    cur_stim = QUESTIONS[i]
+    if (cur_stim["name"]=="nate" & cur_stim["item_type"]==condition_assignment) {
+      nate_list.push(cur_stim)
+    }
+    if (cur_stim["name"]=="justin" & cur_stim["item_type"]==condition_assignment) {
+      justin_list.push(cur_stim)
+    }
+
+  }
+
+  console.log(nate_list);
+  console.log(justin_list);
 
   // Justin's questions on one page
   var justin_manipulation_check = {
