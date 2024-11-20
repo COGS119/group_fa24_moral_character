@@ -176,52 +176,77 @@
   }
   timeline.push(trial_scenario);
 
-  var justin_list = [];
-var nate_list = [];
 
-// Loop through questions and pull out the justin and nate ones
-for (i = 0; i < QUESTIONS.length; i++) {
-    cur_stim = QUESTIONS[i];
-    if (cur_stim["name"] == "nate" && cur_stim["item_type"] == condition_assignment) {
-        nate_list.push(cur_stim);
-    }
-    if (cur_stim["name"] == "justin" && cur_stim["item_type"] == condition_assignment) {
-        justin_list.push(cur_stim);
-    }
-}
+  // Randomly assign condition to either 'moral' or 'immoral'
+//var condition_assignment = jsPsych.randomization.sampleWithoutReplacement(['moral', 'immoral'], 1)[0];
 
-console.log(nate_list);
-console.log(justin_list);
 
-// Create Justin's questions object
+var justin_list = QUESTIONS.filter(q => q.name === "justin" && q.item_type === condition_assignment);
+var nate_list = QUESTIONS.filter(q => q.name === "nate" && q.item_type === condition_assignment);
+
+console.log("Filtered Justin Questions:", justin_list);
+console.log("Filtered Nate Questions:", nate_list);
+
+// Dynamically set preambles based on condition
+var justin_preamble = condition_assignment === "moral" 
+    ? "<p>Justin was able to decide quickly. He decided not to steal the money.</p>" 
+    : "<p>Justin was able to decide quickly. He decided to pocket the money and drive off.</p>";
+
+var nate_preamble = condition_assignment === "moral" 
+    ? "<p>Nate took a long time to decide not to steal the money.</p>" 
+    : "<p>Nate took a long time to decide and ultimately decided to pocket the money.</p>";
+
+console.log("Justin Preamble:", justin_preamble);
+console.log("Nate Preamble:", nate_preamble);
+
+
+// Create Justin and Nate questions
 var justin_questions = { 
     type: jsPsychSurveyLikert, 
-    preamble: "<p>Justin was able to decide quickly. He decided not to steal the money.</p>",  // Reminder Preamble
+    preamble: justin_preamble,
     questions: justin_list.map(q => ({
-        prompt: q.text, 
-        required: true, 
-        labels: q.options, 
+        prompt: q.text,
+        required: true,
+        labels: q.options,
         name: q.item
     }))
 }; 
 
-// Create Nate's questions object
 var nate_questions = { 
     type: jsPsychSurveyLikert, 
-    preamble: "<p>Nate took a long time to decide not to steal the money.</p>",   // Reminder Preamble
+    preamble: nate_preamble,
     questions: nate_list.map(q => ({
-        prompt: q.text, 
-        required: true, 
-        labels: q.options, 
+        prompt: q.text,
+        required: true,
+        labels: q.options,
         name: q.item
     }))
 }; 
 
-timeline.push(justin_questions, nate_questions);
 
+// Create Manipulation Check Questions object
+var mc_questions = { 
+    type: jsPsychSurveyLikert, 
+    preamble: "<p>Please answer the following questions about the decision-making process.</p>",  // Reminder Preamble
+    questions: MC_QUESTIONS.map(q => ({
+        prompt: q.text, 
+        required: true, 
+        labels: q.options, 
+        name: q.item_type
+    }))
+}; 
 
+// Push all questions to the timeline
+timeline.push(mc_questions, justin_questions, nate_questions);
 
-
+var feedback = {
+  type: jsPsychSurveyText,
+  questions: [
+    {prompt: "What do you think the experiment was about?", rows: 4, columns: 50},
+    {prompt: "Did you encounter any technical issues? If yes, please describe them.", rows: 4, columns: 50}
+  ]
+};
+timeline.push(feedback);
 
   //PLEASE KEEP FOR ALL FUTURE ITERATIONS
   //this portion of the code ensures that the data gets sent to be stored on OSF
@@ -235,14 +260,7 @@ timeline.push(justin_questions, nate_questions);
   timeline.push(save_data);
   //PLEASE KEEP FOR ALL FUTURE ITERATIONS
 
-  var feedback = {
-  type: jsPsychSurveyText,
-  questions: [
-    {prompt: "What do you think the experiment was about?", rows: 4, columns: 50},
-    {prompt: "Did you encounter any technical issues? If yes, please describe them.", rows: 4, columns: 50}
-  ]
-};
-timeline.push(feedback);
+
 
   
   var debrief = {
