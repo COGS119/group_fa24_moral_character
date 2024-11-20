@@ -151,7 +151,7 @@
   var instructions = {
     type: jsPsychHtmlButtonResponse,
     stimulus: `<p>Welcome to the study! In this experiment, you will read about two individuals, Justin and Nate.</p>
-                <p>After each story, you will be asked to evaluate their actions and character using a series of questions.</p> 
+                <p>After each story, you will be asked to evaluate their actions and character through a series of questions.</p> 
                <p>Please read the stories carefully and answer the questions to the best of your ability.</p>
                <p>Click 'Continue' to proceed.</p>`,
     choices: ['Continue']
@@ -177,43 +177,50 @@
   timeline.push(trial_scenario);
 
   var justin_list = [];
-  var nate_list = [];
+var nate_list = [];
 
-  for (i=0; i<QUESTIONS.length; i++) {
-    //loop through questions and pull out the justin and nate ones
-    cur_stim = QUESTIONS[i]
-    if (cur_stim["name"]=="nate" & cur_stim["item_type"]==condition_assignment) {
-      nate_list.push(cur_stim)
+// Loop through questions and pull out the justin and nate ones
+for (i = 0; i < QUESTIONS.length; i++) {
+    cur_stim = QUESTIONS[i];
+    if (cur_stim["name"] == "nate" && cur_stim["item_type"] == condition_assignment) {
+        nate_list.push(cur_stim);
     }
-    if (cur_stim["name"]=="justin" & cur_stim["item_type"]==condition_assignment) {
-      justin_list.push(cur_stim)
+    if (cur_stim["name"] == "justin" && cur_stim["item_type"] == condition_assignment) {
+        justin_list.push(cur_stim);
     }
+}
 
-  }
+console.log(nate_list);
+console.log(justin_list);
 
-  console.log(nate_list);
-  console.log(justin_list);
-
-  var justin_questions = { 
-type: jsPsychSurveyLikert, 
-preamble: "<p>Justin quickly decided not to steal the money.</p>",  //Reminder Preamble
-questions: [ 
-{prompt: "Does Justin have entirely good (vs. entirely bad) moral principles?", required: true, labels: moral_likert, name: "justin_principles"}, 
-{prompt: "Does Justin have good (vs. bad) moral standards?", required: true, labels: moral_likert, name: "justin_standards"}, 
-{prompt: "Does Justin deep down have the moral principles to do the right thing?", required: true, labels: moral_likert, name: "justin_knowledge"} 
-], 
+// Create Justin's questions object
+var justin_questions = { 
+    type: jsPsychSurveyLikert, 
+    preamble: "<p>Justin was able to decide quickly. He decided not to steal the money.</p>",  // Reminder Preamble
+    questions: justin_list.map(q => ({
+        prompt: q.text, 
+        required: true, 
+        labels: q.options, 
+        name: q.item
+    }))
 }; 
 
+// Create Nate's questions object
 var nate_questions = { 
-type: jsPsychSurveyLikert, 
-preamble: "<p>Nate took a long time to decide not to steal the money.</p>",   //Reminder Preamble
-questions: [ 
-{prompt: "Does Nate have entirely good (vs. entirely bad) moral principles?", required: true, labels: moral_likert, name: "nate_principles"}, 
-{prompt: "Does Nate have good (vs. bad) moral standards?", required: true, labels: moral_likert, name: "nate_standards"}, 
-{prompt: "Does Nate deep down have the moral principles to do the right thing?", required: true, labels: moral_likert, name: "nate_knowledge"} 
-], 
+    type: jsPsychSurveyLikert, 
+    preamble: "<p>Nate took a long time to decide not to steal the money.</p>",   // Reminder Preamble
+    questions: nate_list.map(q => ({
+        prompt: q.text, 
+        required: true, 
+        labels: q.options, 
+        name: q.item
+    }))
 }; 
-timeline.push(justin_questions, nate_questions); 
+
+timeline.push(justin_questions, nate_questions);
+
+
+
 
 
   //PLEASE KEEP FOR ALL FUTURE ITERATIONS
@@ -250,7 +257,12 @@ timeline.push(debrief);
 
 // remove jsPsych.data.displayData();
 
+var full_screen = {
+    type: jsPsychFullscreen,
+    fullscreen_mode: false,
+  }
 
+  timeline.push(full_screen);
 
   /* start the experiment */
   jsPsych.run(timeline);
