@@ -24,7 +24,7 @@
   /* initialize jsPsych */
   var jsPsych = initJsPsych({
     on_finish: function () {
-   //   jsPsych.data.displayData();
+      //   jsPsych.data.displayData();
     }
   });
 
@@ -34,105 +34,68 @@
   //create a unique filename by combining a random string and a millisecond counter (to avoid duplicates)
   var random_id = jsPsych.randomization.randomID(10);
   const date = new Date();
-  random_id = "p"+random_id.toString();
+  random_id = "p" + random_id.toString();
   var file_id = random_id + "_" + date.getTime().toString();
   const filename = `${file_id}.csv`;
   //also store the random id for convenience
   jsPsych.data.addProperties({
-        random_id: random_id,
-      });
+    random_id: random_id,
+  });
   //PLEASE KEEP FOR ALL FUTURE ITERATIONS
 
-  /* create timeline */
-  var timeline = [];
+  //wrap the timeline creation in a function
+  //this allows us to make an asynchronous call with data pipe to get a condition number
+  //which allows us to do true counterbalancing
+  function createTimeline(condition_assignment) {
+    //condition now gets assigned here, no longer need the random sampling approach
+    // previously:
+    //var condition_assignment = jsPsych.randomization.sampleWithoutReplacement(['moral', 'immoral'], 1)[0];
 
-  var full_screen = {
-    type: jsPsychFullscreen,
-    fullscreen_mode: true,
-  }
-
-  timeline.push(full_screen);
-
-  console.log(VIGNETTES[0])
-
-  var condition_assignment = jsPsych.randomization.sampleWithoutReplacement(['moral', 'immoral'], 1)[0];
-
-  var stimulus_item_list = [];
-
-  for (i=0; i<VIGNETTES.length; i++) {
-    cur_stim = VIGNETTES[i];
-
-    if (cur_stim["item_type"]==condition_assignment) {
-      stimulus_item_list.push(cur_stim)
+    if (condition == 0) {
+      var condition_assignment = "moral";
+    } else {
+      var condition_assignment = "immoral";
     }
 
-  }
+    /* create timeline */
+    var timeline = [];
 
-  var stimulus_item = stimulus_item_list[0];
+    var full_screen = {
+      type: jsPsychFullscreen,
+      fullscreen_mode: true,
+    }
 
-  console.log(stimulus_item);
-  console.log(stimulus_item["item_type"])
-  console.log(stimulus_item["text"])
-  
-  /* load in stimulus list */
-  // IDEA: store the vignette text as a variable in .js code (loaded above)
-  // each element in the variable VIGNETTES is one of the two prompts, structured as html
-  // you can view the structure by looking in the console
-  // console.log(VIGNETTES)
+    timeline.push(full_screen);
 
-  //let's store one of these elements
-  console.log("Assigned Condition:", condition_assignment);
-  console.log("Stimulus Item:", stimulus_item);
-  // MAIN TO DO: How can we systematically assign participants to one of the vignettes/ conditions?
+    /* load in stimulus list */
+    // IDEA: store the vignette text as a variable in .js code (loaded above)
+    // each element in the variable VIGNETTES is one of the two prompts, structured as html
+    // you can view the structure by looking in the console
+    // console.log(VIGNETTES)
 
-  //define likert scale labels for each question
-  //we have seven options, so seven entries. We need to *at least* specify the extremes of the scale.
-  var speed_likert = [
-    "very slowly",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "very quickly"
-  ];
+    //let's store one of these elements
+    var stimulus_item_list = [];
 
-  var impulsivity_likert = [
-    "very cautious",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "very impulsive"
-  ];
+    for (i = 0; i < VIGNETTES.length; i++) {
+      cur_stim = VIGNETTES[i];
 
-  var certainty_likert = [
-    "very doubtful",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "very certain"
-  ];
+      if (cur_stim["item_type"] == condition_assignment) {
+        stimulus_item_list.push(cur_stim)
+      }
 
-  var moral_likert = [
-    "very immoral",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "very moral"
-  ];
+    }
+
+    var stimulus_item = stimulus_item_list[0];
 
 
-  /* Adding survey for data collection */
+    console.log("Assigned Condition:", condition_assignment);
+    console.log("Stimulus Item:", stimulus_item);
 
-  var trial = {
-    type: jsPsychSurveyHtmlForm,
-    html: `
+    /* Adding survey for data collection */
+
+    var trial = {
+      type: jsPsychSurveyHtmlForm,
+      html: `
       <label>Enter your Participant ID (PID): <input name="pid" type="text" required></label><br><br>
       <label>What is your age in years? <input name="age" type="number" required></label><br><br> 
       <label>What is your gender? 
@@ -144,146 +107,157 @@
         </select>
       </label>
     `
-  };
-  timeline.push(trial);
+    };
+    timeline.push(trial);
 
-  /* Instructions page */
-  var instructions = {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: `<p>Welcome to the study! In this experiment, you will read about two individuals, Justin and Nate.</p>
+    /* Instructions page */
+    var instructions = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: `<p>Welcome to the study! In this experiment, you will read about two individuals, Justin and Nate.</p>
                 <p>After each story, you will be asked to evaluate their actions and character through a series of questions.</p> 
                <p>Please read the stories carefully and answer the questions to the best of your ability.</p>
                <p>Click 'Continue' to proceed.</p>`,
-    choices: ['Continue']
-  };
+      choices: ['Continue']
+    };
 
-  timeline.push(instructions);
+    timeline.push(instructions);
 
-
-
-  // here's how we can show a given vignette trial
-  // TO DO: what else do we need to add to the trial procedure? What other information should we store? How can we turn this into a complete experiment timeline?
-  var trial_scenario = {
-    type: jsPsychHtmlButtonResponse,
-    //add the vignette as text at the top 
-    //(could also present the vignette integrated with the questions - what are the pros and cons of doing so?)
-    stimulus: stimulus_item['text'],
-    choices: ["Continue"],
-    // store elements from the stimulus item
-    data: {
-      item_type: stimulus_item['item_type']
+    // here's how we can show a given vignette trial
+    // TO DO: what else do we need to add to the trial procedure? What other information should we store? How can we turn this into a complete experiment timeline?
+    var trial_scenario = {
+      type: jsPsychHtmlButtonResponse,
+      //add the vignette as text at the top 
+      //(could also present the vignette integrated with the questions - what are the pros and cons of doing so?)
+      stimulus: stimulus_item['text'],
+      choices: ["Continue"],
+      // store elements from the stimulus item
+      data: {
+        item_type: stimulus_item['item_type']
+      }
     }
-  }
-  timeline.push(trial_scenario);
+    timeline.push(trial_scenario);
 
 
-  // Randomly assign condition to either 'moral' or 'immoral'
-//var condition_assignment = jsPsych.randomization.sampleWithoutReplacement(['moral', 'immoral'], 1)[0];
+    // Randomly assign condition to either 'moral' or 'immoral'
+    //var condition_assignment = jsPsych.randomization.sampleWithoutReplacement(['moral', 'immoral'], 1)[0];
 
 
-var justin_list = QUESTIONS.filter(q => q.name === "justin" && q.item_type === condition_assignment);
-var nate_list = QUESTIONS.filter(q => q.name === "nate" && q.item_type === condition_assignment);
+    var justin_list = QUESTIONS.filter(q => q.name === "justin" && q.item_type === condition_assignment);
+    var nate_list = QUESTIONS.filter(q => q.name === "nate" && q.item_type === condition_assignment);
 
-console.log("Filtered Justin Questions:", justin_list);
-console.log("Filtered Nate Questions:", nate_list);
+    console.log("Filtered Justin Questions:", justin_list);
+    console.log("Filtered Nate Questions:", nate_list);
 
-// Dynamically set preambles based on condition
-var justin_preamble = condition_assignment === "moral" 
-    ? "<p>Justin was able to decide quickly. He decided not to steal the money.</p>" 
-    : "<p>Justin was able to decide quickly. He decided to pocket the money and drive off.</p>";
+    // Select the preamble
+    var justin_preamble = justin_list[0]["preamble"];
+    var nate_preamble = nate_list[0]["preamble"];
 
-var nate_preamble = condition_assignment === "moral" 
-    ? "<p>Nate took a long time to decide not to steal the money.</p>" 
-    : "<p>Nate took a long time to decide and ultimately decided to pocket the money.</p>";
+    console.log("Justin Preamble:", justin_preamble);
+    console.log("Nate Preamble:", nate_preamble);
 
-console.log("Justin Preamble:", justin_preamble);
-console.log("Nate Preamble:", nate_preamble);
+    //create a quick function to convert an array of two end points to an array 
+    //with blank strings for "inner" scale options
+    function convert_endpoints_to_likert_options(polar_array, number_of_scale_options) {
+      var number_of_blank_options = number_of_scale_options - 2;
+      var blank_array = Array(number_of_blank_options).fill("");
+      //put it all together by pasting the two endpoints on either side of the blank array
+      var complete_array = [polar_array[0]].concat(blank_array).concat([polar_array[1]]);
+      return complete_array
+    }
 
+    console.log(convert_endpoints_to_likert_options(["no", "yes"], 7))
 
-// Create Justin and Nate questions
-var justin_questions = { 
-    type: jsPsychSurveyLikert, 
-    preamble: justin_preamble,
-    questions: justin_list.map(q => ({
+    // Create Justin and Nate questions
+    var justin_questions = {
+      type: jsPsychSurveyLikert,
+      preamble: justin_preamble,
+      questions: justin_list.map(q => ({
         prompt: q.text,
         required: true,
-        labels: q.options,
+        labels: convert_endpoints_to_likert_options(q.options, 7),
         name: q.item
-    }))
-}; 
+      }))
+    };
 
-var nate_questions = { 
-    type: jsPsychSurveyLikert, 
-    preamble: nate_preamble,
-    questions: nate_list.map(q => ({
+    var nate_questions = {
+      type: jsPsychSurveyLikert,
+      preamble: nate_preamble,
+      questions: nate_list.map(q => ({
         prompt: q.text,
         required: true,
-        labels: q.options,
+        labels: convert_endpoints_to_likert_options(q.options, 7),
         name: q.item
-    }))
-}; 
+      }))
+    };
 
 
-// Create Manipulation Check Questions object
-var mc_questions = { 
-    type: jsPsychSurveyLikert, 
-    preamble: "<p>Please answer the following questions about the decision-making process.</p>",  // Reminder Preamble
-    questions: MC_QUESTIONS.map(q => ({
-        prompt: q.text, 
-        required: true, 
-        labels: q.options, 
+    // Create Manipulation Check Questions object
+    var mc_questions = {
+      type: jsPsychSurveyLikert,
+      preamble: "<p>Please answer the following questions about the decision-making process.</p>",  // Reminder Preamble
+      questions: MC_QUESTIONS.map(q => ({
+        prompt: q.text,
+        required: true,
+        labels: convert_endpoints_to_likert_options(q.options, 7),
         name: q.item_type
-    }))
-}; 
+      }))
+    };
 
-// Push all questions to the timeline
-timeline.push(mc_questions, justin_questions, nate_questions);
+    // Push all questions to the timeline
+    timeline.push(mc_questions, justin_questions, nate_questions);
 
-var feedback = {
-  type: jsPsychSurveyText,
-  questions: [
-    {prompt: "What do you think the experiment was about?", rows: 4, columns: 50},
-    {prompt: "Did you encounter any technical issues? If yes, please describe them.", rows: 4, columns: 50}
-  ]
-};
-timeline.push(feedback);
+    var feedback = {
+      type: jsPsychSurveyText,
+      questions: [
+        { prompt: "What do you think the experiment was about?", rows: 4, columns: 50 },
+        { prompt: "Did you encounter any technical issues? If yes, please describe them.", rows: 4, columns: 50 }
+      ]
+    };
+    timeline.push(feedback);
 
-  //PLEASE KEEP FOR ALL FUTURE ITERATIONS
-  //this portion of the code ensures that the data gets sent to be stored on OSF
-  const save_data = {
-    type: jsPsychPipe,
-    action: "save",
-    experiment_id: "oPoskIYymX6Y",
-    filename: filename,
-    data_string: () => jsPsych.data.get().csv()
-  };
-  timeline.push(save_data);
-  //PLEASE KEEP FOR ALL FUTURE ITERATIONS
+    //PLEASE KEEP FOR ALL FUTURE ITERATIONS
+    //this portion of the code ensures that the data gets sent to be stored on OSF
+    const save_data = {
+      type: jsPsychPipe,
+      action: "save",
+      experiment_id: "oPoskIYymX6Y",
+      filename: filename,
+      data_string: () => jsPsych.data.get().csv()
+    };
+    timeline.push(save_data);
+    //PLEASE KEEP FOR ALL FUTURE ITERATIONS
 
-
-
-  
-  var debrief = {
-  type: jsPsychHtmlButtonResponse,
-  stimulus: `<p>Thank you for participating!</p>
+    var debrief = {
+      type: jsPsychHtmlButtonResponse,
+      stimulus: `<p>Thank you for participating!</p>
              <p>This study examines how decision speed affects perceptions of moral character.</p>
              <p>Your responses will help us better understand how people evaluate others' actions.</p>
              <p>Click 'Finish' to complete the study.</p>`,
-  choices: ['Finish']
-};
-timeline.push(debrief);
+      choices: ['Finish']
+    };
+    timeline.push(debrief);
 
-// remove jsPsych.data.displayData();
+    // remove jsPsych.data.displayData();
 
-var full_screen = {
-    type: jsPsychFullscreen,
-    fullscreen_mode: false,
+    var full_screen = {
+      type: jsPsychFullscreen,
+      fullscreen_mode: false,
+    }
+
+    timeline.push(full_screen);
+
+    //run experiment
+    jsPsych.run(timeline);
+  };
+
+  //this calls the asynchronous function that gets the condition assignment
+  //and then runs the experiment
+  async function createExperiment() {
+    const condition = await jsPsychPipe.getCondition("rPCppxIzRQ5T");
+    createTimeline(condition_number);
   }
+  createExperiment();
 
-  timeline.push(full_screen);
-
-  /* start the experiment */
-  jsPsych.run(timeline);
 
 </script>
 
