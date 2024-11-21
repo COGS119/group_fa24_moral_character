@@ -46,12 +46,12 @@
   //wrap the timeline creation in a function
   //this allows us to make an asynchronous call with data pipe to get a condition number
   //which allows us to do true counterbalancing
-  function createTimeline(condition_assignment) {
+  function createTimeline(condition_number) {
     //condition now gets assigned here, no longer need the random sampling approach
     // previously:
     //var condition_assignment = jsPsych.randomization.sampleWithoutReplacement(['moral', 'immoral'], 1)[0];
 
-    if (condition == 0) {
+    if (condition_number == 0) {
       var condition_assignment = "moral";
     } else {
       var condition_assignment = "immoral";
@@ -254,7 +254,7 @@
   //and then runs the experiment
   async function createExperiment() {
     const condition = await jsPsychPipe.getCondition("rPCppxIzRQ5T");
-    createTimeline(condition_number);
+    createTimeline(condition);
   }
   createExperiment();
 
