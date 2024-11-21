@@ -57,7 +57,7 @@
     } else if (condition_number == 1) {
       var condition_assignment = "immoral";
       var first_question_page = "justin";
-    } else if (condition_number == 1) {
+    } else if (condition_number == 2) {
       var condition_assignment = "moral";
       var first_question_page = "nate";
     } else {
@@ -276,7 +276,7 @@
   //this calls the asynchronous function that gets the condition assignment
   //and then runs the experiment
   async function createExperiment() {
-    const condition = await jsPsychPipe.getCondition("rPCppxIzRQ5T");
+    const condition = await jsPsychPipe.getCondition("oPoskIYymX6Y");
     createTimeline(condition);
   }
   createExperiment();
