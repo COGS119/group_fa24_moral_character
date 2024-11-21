@@ -230,10 +230,12 @@
 
 
     var feedback = {
-      type: jsPsychSurveyText,
-      questions: [
-        { prompt: "What do you think the experiment was about?", rows: 4, columns: 50 },
-        { prompt: "Did you encounter any technical issues? If yes, please describe them.", rows: 4, columns: 50 }
+  type: jsPsychSurveyText,
+  questions: [
+    {prompt: "What do you think the experiment was about?", rows: 4, columns: 50},
+    {prompt: "Which character did you relate to the most? Nate or Justin", rows: 4, columns: 50},
+    {prompt: "Why did you find this particular character relatable?", rows: 4, columns: 50},
+    {prompt: "Did you encounter any technical issues? If yes, please describe them.", rows: 4, columns: 50}
       ]
     };
     timeline.push(feedback);
