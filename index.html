@@ -53,9 +53,25 @@
 
     if (condition_number == 0) {
       var condition_assignment = "moral";
+      var first_question_page = "justin";
+    } else if (condition_number == 1) {
+      var condition_assignment = "immoral";
+      var first_question_page = "justin";
+    } else if (condition_number == 1) {
+      var condition_assignment = "moral";
+      var first_question_page = "nate";
     } else {
       var condition_assignment = "immoral";
+      var first_question_page = "nate";
     }
+
+    //add these properties to the data
+    jsPsych.data.addProperties({
+      condition: condition_assignment,
+      first_question_page: first_question_page
+    });
+
+
 
     /* create timeline */
     var timeline = [];
@@ -207,7 +223,13 @@
     };
 
     // Push all questions to the timeline
-    timeline.push(mc_questions, justin_questions, nate_questions);
+    // counterbalance whether justin or nate comes first
+    if (first_question_page == "justin") {
+      timeline.push(mc_questions, justin_questions, nate_questions);
+    } else {
+      timeline.push(mc_questions, nate_questions, justin_questions);
+    }
+
 
     var feedback = {
       type: jsPsychSurveyText,
